@@ -12,6 +12,7 @@ import {
   reviveRun,
 } from "@/lib/engine";
 import { RANKS } from "@/lib/deck";
+import { renderShareCard } from "@/lib/sharecard";
 import type { State, Fx, Channel } from "@/lib/types";
 
 type MeterKey = "clout" | "cred" | "receipts";
@@ -85,6 +86,12 @@ export default function Page() {
     setRun(startRun(key, false));
   }, []);
 
+  // dev-only: lets the preview render a share card for visual QA (stripped in prod)
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production") return;
+    (window as unknown as { __mu?: unknown }).__mu = { renderShareCard, getRun: () => run };
+  });
+
   const clearTimers = useCallback(() => {
     timers.current.forEach((t) => clearTimeout(t));
     timers.current = [];
@@ -156,6 +163,42 @@ export default function Page() {
     } catch {
       flash("Long-press to copy");
     }
+  };
+
+  const shareFarewell = async () => {
+    if (!run) return;
+    const text = shareText(run);
+    const blob = await renderShareCard(run);
+    if (blob) {
+      const file = new File([blob], "managing-up.png", { type: "image/png" });
+      const nav = navigator as Navigator & {
+        canShare?: (d: ShareData) => boolean;
+        share?: (d: ShareData) => Promise<void>;
+      };
+      if (nav.share && nav.canShare?.({ files: [file] })) {
+        try {
+          await nav.share({ files: [file], text });
+        } catch {
+          /* user dismissed the share sheet */
+        }
+        return;
+      }
+      // desktop / no file-share: download the image + copy the caption
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "managing-up.png";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {}
+      flash("Image saved · caption copied");
+      return;
+    }
+    copy(text, "Copied!");
   };
 
   const reset = (s: State) => {
@@ -272,24 +315,8 @@ export default function Page() {
           </div>
 
           <div className="end-actions">
-            <button className="btn-share" onClick={() => copy(shareText(run), "Copied!")}>
-              Share my farewell post
-            </button>
-            {!run.practice && (
-              <button
-                className="btn-2"
-                onClick={() =>
-                  copy(
-                    `${window.location.origin}${window.location.pathname}?d=${run.seed}`,
-                    "Challenge link copied!",
-                  )
-                }
-              >
-                Copy challenge link ⚔️
-              </button>
-            )}
-            <button className="btn-2" onClick={() => reset(startRun(seedRef.current, false))}>
-              Replay today
+            <button className="btn-share" onClick={shareFarewell}>
+              Share my farewell post 📸
             </button>
             <button
               className="btn-2"
@@ -297,8 +324,17 @@ export default function Page() {
                 reset(startRun("practice-" + Math.random().toString(36).slice(2, 9), true))
               }
             >
-              New run →
+              Play again →
             </button>
+            <div className="end-foot">
+              <button className="linklike" onClick={() => copy(shareText(run), "Caption copied")}>
+                copy as text
+              </button>
+              <span className="dot">·</span>
+              <a className="linklike" href="/games/">
+                the arcade
+              </a>
+            </div>
           </div>
         </div>
         {copyToast && <div className="toast">{copyToast}</div>}

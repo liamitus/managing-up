@@ -486,6 +486,19 @@ body {
   color: var(--ink);
   cursor: pointer;
 }
+.end-foot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+.end-foot .linklike {
+  font-size: 13px;
+}
+.end-foot .dot {
+  color: var(--muted);
+}
 
 .toast {
   position: fixed;

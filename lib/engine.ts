@@ -55,8 +55,8 @@ export function startRun(seed: string, practice = false): State {
     company,
     day: 1,
     rankIdx: 0, // Intern — start at the bottom
-    clout: 52,
-    cred: 52,
+    clout: 45,
+    cred: 45,
     receipts: 0,
     flags: {},
     record: [],
@@ -190,10 +190,13 @@ export function applyChoice(state: State, idx: number): Fx {
 
   // performance review outcome
   if (card.kind === "review") {
+    const need = 58 + state.rankIdx * 4; // each rung up demands a higher score
     const score = idx === 1 ? state.clout : idx === 2 ? state.cred : (state.clout + state.cred) / 2;
+    // no failing-up on one meter while the other craters
+    const balanced = idx === 1 ? state.cred >= 40 : idx === 2 ? state.clout >= 40 : true;
     if (idx === 1) state.clout += 3; // self-advocacy reads as confidence
     if (idx === 2) state.cred += 4; // crediting the team builds trust
-    if (score >= 58) {
+    if (score >= need && balanced) {
       state.rankIdx = Math.min(RANKS.length - 1, state.rankIdx + 1);
       state.record.push(`got promoted to ${currentTitle(state)}`);
       toast = `⬆️ PROMOTED — ${currentTitle(state)}`;
@@ -202,7 +205,7 @@ export function applyChoice(state: State, idx: number): Fx {
         state.endTitle = "You Made CEO";
         state.endReason = "you failed upward, relentlessly, all the way to the top";
       }
-    } else if (score <= 40) {
+    } else if (score <= 35) {
       if (state.flags.pip) {
         state.status = "fired";
         state.endTitle = "Performance-Improved Out";
