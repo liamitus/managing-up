@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Managing Up
 
-## Getting Started
+A daily, mobile-web **office survival card game**. You're the new hire — react to
+Slack pings, emails, hallway ambushes, and performance reviews, one tap at a time.
+Keep leadership happy (**Clout** 👔) and your team happy (**Cred** 🤝) without letting
+the **Receipts** 🧾 pile up. Climb the ladder to CEO… or end up `#opentowork` with an
+auto-generated LinkedIn farewell post to share.
 
-First, run the development server:
+**▶ Play: <https://liamhowell.com/games/managing-up/>** — a new run every day.
+
+## How it plays
+
+- **Every message is a decision.** There's no right answer, just consequences.
+- **Two meters in tension** — sucking up to leadership burns your team, and vice
+  versa. Hit zero on either and you're fired / managed out.
+- **A hidden third** (Receipts) tracks the screenshots people take. Let it hit 100
+  and you're escorted out.
+- **Pass your performance reviews** to climb the org ladder. Reach the top — or get
+  fired, managed out, or acqui-hired. Each ending writes you a different, very
+  shareable corporate farewell.
+- A **daily seed** gives everyone the same company + opening, and the URL doubles as
+  a "beat my run" challenge link.
+
+## Tech
+
+Next.js (App Router) · React · TypeScript · Tailwind. Ships as a fully **static
+export** to GitHub Pages — no backend, no tracking.
+
+## Develop
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Build
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+EXPORT=1 npm run build   # static export → out/
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## The code
 
-## Learn More
+The writing **is** the game, so most of the fun lives in the deck.
 
-To learn more about Next.js, take a look at the following resources:
+- [`lib/deck.ts`](lib/deck.ts) — the office moments, the recurring cast (Brad, Dave,
+  Priya, the Skip, Tyler…), the ranks, and the first-day onboarding
+- [`lib/engine.ts`](lib/engine.ts) — daily seed, the turn state machine, performance
+  reviews, end conditions, and the generated farewell post
+- [`lib/types.ts`](lib/types.ts) — shared types
+- [`app/page.tsx`](app/page.tsx) — the UI (HUD meters → office moment → choices → ending)
+- [`app/globals.css`](app/globals.css) — the messaging/office-phone look + animations
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Want to add an office moment? `lib/deck.ts` is designed for exactly that — PRs welcome.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## License
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[MIT](LICENSE) © 2026 Liam Howell
