@@ -55,5 +55,12 @@ rm -rf "$PAGES_DIR/games/managing-up" "$PAGES_DIR/games/the-meeting"
 echo "▸ Deploying to GitHub Pages…"
 npm run deploy
 
+# Keep the public source repo (github.com/liamitus/managing-up) in sync with what
+# just went live. out/ and .next/ are gitignored, so this only commits source.
+echo "▸ Syncing source repo…"
+git -C "$GAME_DIR" add -A
+git -C "$GAME_DIR" commit -q -m "$MSG" >/dev/null 2>&1 && echo "  source committed" || echo "  (no source changes)"
+git -C "$GAME_DIR" push -q >/dev/null 2>&1 && echo "  source pushed" || echo "  (source push skipped/failed)"
+
 echo "✅ Shipped → https://liamhowell.com/games/managing-up/"
 echo "   (old /games/the-meeting/ redirects here, query string preserved)"

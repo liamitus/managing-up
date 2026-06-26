@@ -9,6 +9,9 @@ Ships as a **static export** onto Liam's personal site at `/games/managing-up/`.
 The old `/games/the-meeting/` path is a query-preserving redirect (links already
 shared keep working) — see `~/dev/liamhowell.com/src/games/the-meeting/index.html`.
 
+**Public source repo: <https://github.com/liamitus/managing-up>** (MIT). `npm run
+ship` also commits + pushes the source here, so the repo stays in sync with live.
+
 ## "ship it" — how to deploy (IMPORTANT)
 
 When Liam says **"ship it"** (or "deploy", "push it live"), run:
