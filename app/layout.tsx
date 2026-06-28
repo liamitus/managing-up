@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Managing Up — survive the org chart",
   description:
-    "A daily office game. Climb the corporate ladder one terrible decision at a time — juggle your Clout and Cred, dodge the receipts, and try not to get escorted out. New run every day.",
+    "An office survival game. Climb the corporate ladder one terrible decision at a time — juggle your Clout and Cred, dodge the receipts, and try not to get escorted out.",
 };
 
 export const viewport: Viewport = {

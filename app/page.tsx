@@ -7,7 +7,6 @@ import {
   generateArtifact,
   shareText,
   currentTitle,
-  dateKeyOf,
   serializeRun,
   reviveRun,
 } from "@/lib/engine";
@@ -36,6 +35,8 @@ const LEGEND: Record<MeterKey, string> = {
 
 const SEEN_KEY = "mu_seen_v1";
 const RUN_KEY = "mu_run_v1";
+const newSeed = () =>
+  Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
 
 export default function Page() {
   const [run, setRun] = useState<State | null>(null);
@@ -54,28 +55,19 @@ export default function Page() {
   const [copyToast, setCopyToast] = useState<string | null>(null);
   const busyRef = useRef(false);
   const timers = useRef<number[]>([]);
-  const seedRef = useRef<string>("");
 
   useEffect(() => {
-    const p = new URLSearchParams(window.location.search);
-    const d = p.get("d");
-    const key = d && /^\d{4}-\d{2}-\d{2}$/.test(d) ? d : dateKeyOf(new Date());
-    seedRef.current = key;
-
-    // resume today's run (mid-game or finished) across reloads
+    // resume an in-progress run across reloads; otherwise a fresh random office
     try {
       const raw = window.localStorage.getItem(RUN_KEY);
       if (raw) {
-        const saved = JSON.parse(raw);
-        if (saved && saved.seed === key) {
-          const revived = reviveRun(saved.run);
-          if (revived) {
-            setRun(revived);
-            setStarted(true);
-            setRevealed({ clout: true, cred: true, receipts: true });
-            setTutorial(false);
-            return;
-          }
+        const revived = reviveRun(JSON.parse(raw));
+        if (revived && revived.status === "alive") {
+          setRun(revived);
+          setStarted(true);
+          setRevealed({ clout: true, cred: true, receipts: true });
+          setTutorial(false);
+          return;
         }
       }
     } catch {}
@@ -83,7 +75,7 @@ export default function Page() {
     const firstTime = !window.localStorage.getItem(SEEN_KEY);
     setTutorial(firstTime);
     setRevealed({ clout: !firstTime, cred: !firstTime, receipts: !firstTime });
-    setRun(startRun(key, false));
+    setRun(startRun(newSeed()));
   }, []);
 
   // dev-only: lets the preview render a share card for visual QA (stripped in prod)
@@ -141,15 +133,10 @@ export default function Page() {
       setTutorial(false);
     }
 
-    // persist the daily run so reloads resume exactly here
-    if (!next.practice) {
-      try {
-        window.localStorage.setItem(
-          RUN_KEY,
-          JSON.stringify({ seed: next.seed, run: serializeRun(next) }),
-        );
-      } catch {}
-    }
+    // persist so a reload resumes exactly here
+    try {
+      window.localStorage.setItem(RUN_KEY, JSON.stringify(serializeRun(next)));
+    } catch {}
   };
 
   const flash = (m: string) => {
@@ -225,7 +212,7 @@ export default function Page() {
       <main className="mu grid-bg">
         <div className="intro">
           <div className="intro-kicker">Managing Up</div>
-          <div className="intro-tag">a daily office survival game</div>
+          <div className="intro-tag">survive the office · climb the ladder</div>
           <div className="welcome">
             <div className="welcome-head">📋 Welcome to {run.company}!</div>
             <p>
@@ -318,12 +305,7 @@ export default function Page() {
             <button className="btn-share" onClick={shareFarewell}>
               Share my farewell post 📸
             </button>
-            <button
-              className="btn-2"
-              onClick={() =>
-                reset(startRun("practice-" + Math.random().toString(36).slice(2, 9), true))
-              }
-            >
+            <button className="btn-2" onClick={() => reset(startRun(newSeed()))}>
               Play again →
             </button>
             <div className="end-foot">
@@ -354,7 +336,6 @@ export default function Page() {
           <div className="hud-right">
             <span className="rank">
               {currentTitle(run)} · Day {run.day}
-              {run.practice ? " · practice" : ""}
             </span>
             <button className="help-btn" onClick={() => setHelp(true)} aria-label="How it works">
               ?

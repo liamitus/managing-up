@@ -357,7 +357,7 @@ export function generateArtifact(s: State): Artifact {
 }
 
 export function shareText(s: State): string {
-  const head = s.practice ? "Managing Up (practice)" : "Managing Up";
+  const head = "Managing Up";
   const verdict =
     s.status === "ceo" ? "👑 made CEO" : `🪦 ${s.endTitle ?? "out"}`;
   return `${head} @ ${s.company}\n${verdict} — ${currentTitle(s)}, ${s.day - 1} days\nclout ${s.clout} · cred ${s.cred} · 🧾 ${s.receipts}\nplay → liamhowell.com/games/managing-up`;

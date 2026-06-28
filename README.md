@@ -1,12 +1,12 @@
 # Managing Up
 
-A daily, mobile-web **office survival card game**. You're the new hire — react to
+A mobile-web **office survival card game**. You're the new hire — react to
 Slack pings, emails, hallway ambushes, and performance reviews, one tap at a time.
 Keep leadership happy (**Clout** 👔) and your team happy (**Cred** 🤝) without letting
 the **Receipts** 🧾 pile up. Climb the ladder to CEO… or end up `#opentowork` with an
 auto-generated LinkedIn farewell post to share.
 
-**▶ Play: <https://liamhowell.com/games/managing-up/>** — a new run every day.
+**▶ Play: <https://liamhowell.com/games/managing-up/>** — a fresh office every run.
 
 ## How it plays
 
@@ -18,8 +18,8 @@ auto-generated LinkedIn farewell post to share.
 - **Pass your performance reviews** to climb the org ladder. Reach the top — or get
   fired, managed out, or acqui-hired. Each ending writes you a different, very
   shareable corporate farewell.
-- A **daily seed** gives everyone the same company + opening, and the URL doubles as
-  a "beat my run" challenge link.
+- **Every run is a different company** with a different stack of moments — built for
+  "just one more run."
 
 ## Tech
 
