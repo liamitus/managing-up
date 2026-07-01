@@ -55,8 +55,8 @@ export function startRun(seed: string, practice = false): State {
     company,
     day: 1,
     rankIdx: 0, // Intern — start at the bottom
-    clout: 45,
-    cred: 45,
+    clout: 40,
+    cred: 40,
     receipts: 0,
     flags: {},
     record: [],
@@ -190,13 +190,17 @@ export function applyChoice(state: State, idx: number): Fx {
 
   // performance review outcome
   if (card.kind === "review") {
-    const need = 58 + state.rankIdx * 4; // each rung up demands a higher score
-    const score = idx === 1 ? state.clout : idx === 2 ? state.cred : (state.clout + state.cred) / 2;
-    // no failing-up on one meter while the other craters
-    const balanced = idx === 1 ? state.cred >= 40 : idx === 2 ? state.clout >= 40 : true;
-    if (idx === 1) state.clout += 3; // self-advocacy reads as confidence
-    if (idx === 2) state.cred += 4; // crediting the team builds trust
-    if (score >= need && balanced) {
+    // The clever bit: you CAN'T fail upward on one maxed meter. Promotion is
+    // scored on your WEAKER stat — leadership (clout) AND peers (cred) both have
+    // to be there. Each option shores up one meter a little (flavor, plus a
+    // tie-breaker that can tip a close call toward the stat you leaned on).
+    if (idx === 1) state.clout += 5; // self-advocacy reads as confidence
+    else if (idx === 2) state.cred += 6; // crediting the team builds trust
+    state.clout = clamp(state.clout);
+    state.cred = clamp(state.cred);
+    const need = 56 + state.rankIdx * 6; // each rung up demands more, on BOTH meters
+    const score = Math.min(state.clout, state.cred); // your weakest area is the one they see
+    if (score >= need) {
       state.rankIdx = Math.min(RANKS.length - 1, state.rankIdx + 1);
       state.record.push(`got promoted to ${currentTitle(state)}`);
       toast = `⬆️ PROMOTED — ${currentTitle(state)}`;
@@ -205,7 +209,7 @@ export function applyChoice(state: State, idx: number): Fx {
         state.endTitle = "You Made CEO";
         state.endReason = "you failed upward, relentlessly, all the way to the top";
       }
-    } else if (score <= 35) {
+    } else if (score <= 30) {
       if (state.flags.pip) {
         state.status = "fired";
         state.endTitle = "Performance-Improved Out";
